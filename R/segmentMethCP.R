@@ -139,6 +139,7 @@ segmentMethCP <- function(
                 tmp
             }))
     }
+    
     segments <- list()
     for (chr in seq_len(length(stat(object)))) {
         o <- stat(object)[[chr]]
@@ -169,19 +170,21 @@ segmentMethCP <- function(
     segments <- GRanges(segments)
     
     # calculate region summary
-    ovrlp <- findOverlaps(granges(bs.object), segments)
-    segments$nC <- as.numeric(table(to(ovrlp)))
-    M1 <- as.numeric(by(getCoverage(
-        bs.object, type = "M")[from(ovrlp), group1(object)], to(ovrlp), sum))
-    M2 <- as.numeric(by(getCoverage(
-        bs.object, type = "M")[from(ovrlp), group2(object)], to(ovrlp), sum))
-    Cov1 <- as.numeric(by(getCoverage(bs.object)[
-        from(ovrlp), group1(object)], to(ovrlp), sum))
-    Cov2 <- as.numeric(by(getCoverage(bs.object)[
-        from(ovrlp), group2(object)], to(ovrlp), sum))
-    segments$mean.diff <- M1/Cov1 - M2/Cov2
-    segments$mean.cov <- (Cov1 + Cov2)/length(
-        c(group1(object), group2(object)))/segments$nC.valid
+    if (!any(c(group1(object), group2(object)) %in% "notApplicable")) {
+        ovrlp <- findOverlaps(granges(bs.object), segments)
+        segments$nC <- as.numeric(table(to(ovrlp)))
+        M1 <- as.numeric(by(getCoverage(
+            bs.object, type = "M")[from(ovrlp), group1(object)], to(ovrlp), sum))
+        M2 <- as.numeric(by(getCoverage(
+            bs.object, type = "M")[from(ovrlp), group2(object)], to(ovrlp), sum))
+        Cov1 <- as.numeric(by(getCoverage(bs.object)[
+            from(ovrlp), group1(object)], to(ovrlp), sum))
+        Cov2 <- as.numeric(by(getCoverage(bs.object)[
+            from(ovrlp), group2(object)], to(ovrlp), sum))
+        segments$mean.diff <- M1/Cov1 - M2/Cov2
+        segments$mean.cov <- (Cov1 + Cov2)/length(
+            c(group1(object), group2(object)))/segments$nC.valid
+    }
     
     # calculate region statistics
     ovrlp <- findOverlaps(unlist(stat(object)), segments)
