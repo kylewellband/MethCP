@@ -125,18 +125,20 @@ segmentMethCP <- function(
         }))
     }
     # calculate total coverage and methylated counts for each loci
-    stat(object) <- GRangesList(
-        lapply(seq_len(length(stat(object))), function(o){
-            tmp <- stat(object)[[o]]
-            ovrlp <- findOverlaps(granges(bs.object), tmp)
-            tmp$CovGroup1 <- rowSums(
-                as.data.frame(
-                    getCoverage(bs.object)[from(ovrlp), group1(object)]))
-            tmp$CovGroup2 <- rowSums(
-                as.data.frame(
-                    getCoverage(bs.object)[from(ovrlp), group2(object)]))
-            tmp
-        }))
+    if (!any(c(group1(object), group2(object)) %in% "notApplicable")) {
+        stat(object) <- GRangesList(
+            lapply(seq_len(length(stat(object))), function(o){
+                tmp <- stat(object)[[o]]
+                ovrlp <- findOverlaps(granges(bs.object), tmp)
+                tmp$CovGroup1 <- rowSums(
+                    as.data.frame(
+                        getCoverage(bs.object)[from(ovrlp), group1(object)]))
+                tmp$CovGroup2 <- rowSums(
+                    as.data.frame(
+                        getCoverage(bs.object)[from(ovrlp), group2(object)]))
+                tmp
+            }))
+    }
     segments <- list()
     for (chr in seq_len(length(stat(object)))) {
         o <- stat(object)[[chr]]
