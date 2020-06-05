@@ -168,7 +168,7 @@ segmentMethCP <- function(
     }
     segments <- as.data.frame(do.call("rbind", segments))
     segments <- GRanges(segments)
-    message("Segmentation done")
+    
     # calculate region summary
     ovrlp <- findOverlaps(granges(bs.object), segments)
     segments$nC <- as.numeric(table(to(ovrlp)))
