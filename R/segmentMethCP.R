@@ -168,11 +168,11 @@ segmentMethCP <- function(
     }
     segments <- as.data.frame(do.call("rbind", segments))
     segments <- GRanges(segments)
-    
+    message("Segmentation done")
     # calculate region summary
+    ovrlp <- findOverlaps(granges(bs.object), segments)
+    segments$nC <- as.numeric(table(to(ovrlp)))
     if (!any(c(group1(object), group2(object)) %in% "notApplicable")) {
-        ovrlp <- findOverlaps(granges(bs.object), segments)
-        segments$nC <- as.numeric(table(to(ovrlp)))
         M1 <- as.numeric(by(getCoverage(
             bs.object, type = "M")[from(ovrlp), group1(object)], to(ovrlp), sum))
         M2 <- as.numeric(by(getCoverage(
