@@ -71,10 +71,15 @@ getSigRegion <- function(
     res <- as.data.frame(segmentation(object))
     res$strand <- NULL
     res$width <- NULL
-    res <- res[
-        res$region.pval <= sig.level & res$mean.cov >= mean.coverage &
-            abs(res$mean.diff) >= mean.diff & res$nC.valid >= nC.valid, ]
-    res$mean.diff <- round(res$mean.diff, 4)
-    res$mean.cov <- round(res$mean.cov, 4)
+    if (!any(c(group1(object), group2(object)) %in% "notApplicable")) {
+        res <- res[
+            res$region.pval <= sig.level & res$mean.cov >= mean.coverage &
+                abs(res$mean.diff) >= mean.diff & res$nC.valid >= nC.valid, ]
+        res$mean.diff <- round(res$mean.diff, 4)
+        res$mean.cov <- round(res$mean.cov, 4)
+    } else {
+        res <- res[
+            res$region.pval <= sig.level & res$nC.valid >= nC.valid, ]
+    }
     return(res)
 }
